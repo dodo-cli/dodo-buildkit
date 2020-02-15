@@ -5,7 +5,7 @@ import (
 	"net"
 
 	"github.com/docker/docker/api/types"
-	dodotypes "github.com/oclaussen/dodo/pkg/types"
+	dodotypes "github.com/dodo/dodo-build/pkg/types"
 	"github.com/pkg/errors"
 	"golang.org/x/net/context"
 )

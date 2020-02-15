@@ -9,12 +9,12 @@ import (
 	"path/filepath"
 
 	"github.com/docker/docker/pkg/urlutil"
+	"github.com/dodo/dodo-build/pkg/types"
 	buildkit "github.com/moby/buildkit/session"
 	"github.com/moby/buildkit/session/auth/authprovider"
 	"github.com/moby/buildkit/session/filesync"
 	"github.com/moby/buildkit/session/secrets/secretsprovider"
 	"github.com/moby/buildkit/session/sshforward/sshprovider"
-	"github.com/oclaussen/dodo/pkg/types"
 	"github.com/pkg/errors"
 	fstypes "github.com/tonistiigi/fsutil/types"
 )

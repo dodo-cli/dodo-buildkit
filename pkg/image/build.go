@@ -12,11 +12,11 @@ import (
 	"github.com/docker/docker/pkg/jsonmessage"
 	"github.com/docker/docker/pkg/stringid"
 	"github.com/docker/docker/pkg/term"
+	"github.com/dodo/dodo-build/pkg/config"
 	controlapi "github.com/moby/buildkit/api/services/control"
 	"github.com/moby/buildkit/client"
 	"github.com/moby/buildkit/util/appcontext"
 	"github.com/moby/buildkit/util/progress/progressui"
-	"github.com/oclaussen/dodo/pkg/config"
 	"golang.org/x/net/context"
 	"golang.org/x/sync/errgroup"
 )

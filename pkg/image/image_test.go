@@ -10,7 +10,7 @@ import (
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/pkg/jsonmessage"
-	dodotypes "github.com/oclaussen/dodo/pkg/types"
+	dodotypes "github.com/dodo/dodo-build/pkg/types"
 	"github.com/stretchr/testify/assert"
 	"golang.org/x/net/context"
 )
