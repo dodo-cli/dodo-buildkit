@@ -9,8 +9,8 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/dodo/dodo-build/pkg/config"
 	buildkit "github.com/moby/buildkit/session"
+	"github.com/oclaussen/dodo/pkg/appconfig"
 	"github.com/pkg/errors"
 	"golang.org/x/net/context"
 )
@@ -40,7 +40,7 @@ func prepareSession(baseDir string) (session, error) {
 }
 
 func readOrCreateSessionID() (string, error) {
-	sessionFile := filepath.Join(config.GetAppDir(), "sessionID")
+	sessionFile := filepath.Join(appconfig.GetAppDir(), "sessionID")
 	if _, err := os.Lstat(sessionFile); err == nil {
 		sessionID, err := ioutil.ReadFile(sessionFile)
 		if err != nil {

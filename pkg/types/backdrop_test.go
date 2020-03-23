@@ -1,9 +1,9 @@
-package decoder
+package types
 
 import (
 	"testing"
 
-	"github.com/dodo/dodo-build/pkg/types"
+	"github.com/dodo/dodo-config/pkg/decoder"
 	"github.com/stretchr/testify/assert"
 	"gopkg.in/yaml.v2"
 )
@@ -38,12 +38,15 @@ func TestFullExample(t *testing.T) {
 	assert.True(t, config.Build.ForcePull)
 }
 
-func getExampleConfig(t *testing.T, yamlConfig string) types.Backdrop {
+func getExampleConfig(t *testing.T, yamlConfig string) *Backdrop {
+	// TODO: clean up this part
 	var mapType map[interface{}]interface{}
 	err := yaml.Unmarshal([]byte(yamlConfig), &mapType)
 	assert.Nil(t, err)
-	decoder := NewDecoder("example")
-	config, err := decoder.DecodeBackdrop("example", mapType)
-	assert.Nil(t, err)
+	produce := NewBackdrop()
+	ptr, decode := produce()
+	config := *(ptr.(**Backdrop))
+	d := decoder.New("test")
+	decode(d, mapType)
 	return config
 }

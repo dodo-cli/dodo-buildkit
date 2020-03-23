@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 
 	"github.com/docker/docker/client"
-	"github.com/oclaussen/dodo/pkg/plugin/configuration"
+	"github.com/oclaussen/dodo/pkg/configuration"
 )
 
 const (

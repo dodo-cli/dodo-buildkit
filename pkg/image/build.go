@@ -12,11 +12,13 @@ import (
 	"github.com/docker/docker/pkg/jsonmessage"
 	"github.com/docker/docker/pkg/stringid"
 	"github.com/docker/docker/pkg/term"
-	"github.com/dodo/dodo-build/pkg/config"
+	cfgtypes "github.com/dodo/dodo-build/pkg/types"
+	"github.com/dodo/dodo-config/pkg/decoder"
 	controlapi "github.com/moby/buildkit/api/services/control"
 	"github.com/moby/buildkit/client"
 	"github.com/moby/buildkit/util/appcontext"
 	"github.com/moby/buildkit/util/progress/progressui"
+	"github.com/oclaussen/go-gimme/configfiles"
 	"golang.org/x/net/context"
 	"golang.org/x/sync/errgroup"
 )
@@ -40,21 +42,35 @@ func (image *Image) Get() (string, error) {
 }
 
 func (image *Image) Build() (string, error) {
+	// TODO: refactor here, the dependency on config is uncomfortable
+	backdrops := map[string]*cfgtypes.Backdrop{}
+	configfiles.GimmeConfigFiles(&configfiles.Options{
+		Name:                      "dodo",
+		Extensions:                []string{"yaml", "yml", "json"},
+		IncludeWorkingDirectories: true,
+		Filter: func(configFile *configfiles.ConfigFile) bool {
+			d := decoder.New(configFile.Path)
+			d.DecodeYaml(configFile.Content, &backdrops, map[string]decoder.Decoding{
+				"backdrops": decoder.Map(cfgtypes.NewBackdrop(), &backdrops),
+			})
+			return false
+		},
+	})
+
 	for _, name := range image.config.Dependencies {
-		// TODO: refactor here, the dependency on config is uncomfortable
-		conf, err := config.LoadImage(name)
-		if err != nil {
-			return "", err
-		}
-		if image.config.ForceRebuild {
-			conf.ForceRebuild = true
-		}
-		dependency, err := NewImage(image.client, image.authConfigs, conf)
-		if err != nil {
-			return "", err
-		}
-		if _, err := dependency.Get(); err != nil {
-			return "", err
+		for _, backdrop := range backdrops {
+			if backdrop.Build != nil && backdrop.Build.ImageName == name {
+				if image.config.ForceRebuild {
+					backdrop.Build.ForceRebuild = true
+				}
+				dependency, err := NewImage(image.client, image.authConfigs, backdrop.Build)
+				if err != nil {
+					return "", err
+				}
+				if _, err := dependency.Get(); err != nil {
+					return "", err
+				}
+			}
 		}
 	}
 
@@ -66,7 +82,6 @@ func (image *Image) Build() (string, error) {
 
 	imageID := ""
 	displayCh := make(chan *client.SolveStatus)
-	_, stdErrIsTerminal := term.GetFdInfo(os.Stderr)
 
 	eg, _ := errgroup.WithContext(appcontext.Context())
 
@@ -79,7 +94,7 @@ func (image *Image) Build() (string, error) {
 		)
 	})
 
-	if image.config.ForceRebuild && stdErrIsTerminal {
+	if image.config.ForceRebuild {
 		eg.Go(func() error {
 			cons, err := console.ConsoleFromFile(os.Stderr)
 			if err != nil {
@@ -146,8 +161,7 @@ func (image *Image) runBuild(contextData *contextData, displayCh chan *client.So
 	}
 	defer response.Body.Close()
 
-	_, stdErrIsTerminal := term.GetFdInfo(os.Stderr)
-	return handleBuildResult(response.Body, displayCh, image.config.ForceRebuild && stdErrIsTerminal)
+	return handleBuildResult(response.Body, displayCh, image.config.ForceRebuild)
 }
 
 func handleBuildResult(response io.Reader, displayCh chan *client.SolveStatus, printOutput bool) (string, error) {
