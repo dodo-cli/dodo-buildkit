@@ -1,11 +1,11 @@
 package plugin
 
 import (
-	"github.com/dodo/dodo-build/pkg/client"
 	"github.com/dodo/dodo-build/pkg/image"
 	"github.com/dodo/dodo-build/pkg/types"
-	"github.com/dodo/dodo-config/pkg/decoder"
+	"github.com/dodo/dodo-docker/pkg/client"
 	"github.com/oclaussen/dodo/pkg/configuration"
+	"github.com/oclaussen/dodo/pkg/decoder"
 	dodo "github.com/oclaussen/dodo/pkg/types"
 	"github.com/oclaussen/go-gimme/configfiles"
 )

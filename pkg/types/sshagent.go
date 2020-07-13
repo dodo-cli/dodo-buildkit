@@ -4,7 +4,8 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/dodo/dodo-config/pkg/decoder"
+	"github.com/oclaussen/dodo/pkg/decoder"
+	"github.com/oclaussen/dodo/pkg/types"
 )
 
 func NewSSHAgent() decoder.Producer {

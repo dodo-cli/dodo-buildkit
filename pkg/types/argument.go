@@ -4,7 +4,8 @@ import (
 	"os"
 	"strings"
 
-	"github.com/dodo/dodo-config/pkg/decoder"
+	"github.com/oclaussen/dodo/pkg/decoder"
+	"github.com/oclaussen/dodo/pkg/types"
 )
 
 func NewArgument() decoder.Producer {

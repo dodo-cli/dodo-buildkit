@@ -2,7 +2,6 @@ package image
 
 import (
 	"bytes"
-	"fmt"
 	"io"
 	"io/ioutil"
 	"os"
@@ -16,6 +15,7 @@ import (
 	"github.com/moby/buildkit/session/secrets/secretsprovider"
 	"github.com/moby/buildkit/session/sshforward/sshprovider"
 	"github.com/pkg/errors"
+	log "github.com/sirupsen/logrus"
 	fstypes "github.com/tonistiigi/fsutil/types"
 )
 
@@ -45,14 +45,14 @@ func (data *contextData) cleanup() {
 }
 
 func prepareContext(config *types.BuildInfo, session session) (*contextData, error) {
+	log.Debug("preparing context")
 	data := contextData{
-		remote:         "",
+		remote:         clientSession,
 		dockerfileName: config.Dockerfile,
 	}
 	syncedDirs := []filesync.SyncedDir{}
 
 	if config.Context == "" {
-		data.remote = clientSession
 		dir, err := data.tempdir()
 		if err != nil {
 			data.cleanup()
@@ -61,7 +61,6 @@ func prepareContext(config *types.BuildInfo, session session) (*contextData, err
 		syncedDirs = append(syncedDirs, filesync.SyncedDir{Name: "context", Dir: dir})
 
 	} else if _, err := os.Stat(config.Context); err == nil {
-		data.remote = clientSession
 		syncedDirs = append(syncedDirs, filesync.SyncedDir{
 			Name: "context",
 			Dir:  config.Context,
@@ -111,28 +110,18 @@ func prepareContext(config *types.BuildInfo, session session) (*contextData, err
 			Dir:  dockerfileDir,
 		})
 
-	} else if config.ImageName != "" && data.remote == clientSession {
-		dir, err := data.tempdir()
-		if err != nil {
-			data.cleanup()
-			return nil, err
-		}
-		tempfile := filepath.Join(dir, "Dockerfile")
-		if err := writeDockerfile(tempfile, fmt.Sprintf("FROM %s", config.ImageName)); err != nil {
-			data.cleanup()
-			return nil, err
-		}
-		data.dockerfileName = filepath.Base(tempfile)
-		dockerfileDir := filepath.Dir(tempfile)
-		syncedDirs = append(syncedDirs, filesync.SyncedDir{
-			Name: "dockerfile",
-			Dir:  dockerfileDir,
-		})
-
 	}
+
+	log.WithFields(log.Fields{
+		"remote":         data.remote,
+		"dockerfileName": data.dockerfileName,
+		"contextDir":     data.contextDir,
+		"config":         config,
+	}).Debug("prepared context")
 
 	if len(syncedDirs) > 0 {
 		session.Allow(filesync.NewFSSyncProvider(syncedDirs))
+		log.WithFields(log.Fields{"dirs": syncedDirs}).Debug("added context directories")
 	}
 
 	session.Allow(authprovider.NewDockerAuthProvider())
