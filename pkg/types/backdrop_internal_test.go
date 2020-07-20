@@ -43,10 +43,12 @@ func getExampleConfig(t *testing.T, yamlConfig string) *Backdrop {
 	var mapType map[interface{}]interface{}
 	err := yaml.Unmarshal([]byte(yamlConfig), &mapType)
 	assert.Nil(t, err)
+
 	produce := NewBackdrop()
 	ptr, decode := produce()
 	config := *(ptr.(**Backdrop))
 	d := decoder.New("test")
 	decode(d, mapType)
+
 	return config
 }

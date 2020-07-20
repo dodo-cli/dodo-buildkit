@@ -12,6 +12,7 @@ import (
 	"github.com/docker/docker/pkg/jsonmessage"
 	"github.com/docker/docker/pkg/stringid"
 	cfgtypes "github.com/dodo/dodo-build/pkg/types"
+	log "github.com/hashicorp/go-hclog"
 	controlapi "github.com/moby/buildkit/api/services/control"
 	"github.com/moby/buildkit/client"
 	"github.com/moby/buildkit/util/appcontext"
@@ -43,7 +44,7 @@ func (image *Image) Get() (string, error) {
 func (image *Image) Build() (string, error) {
 	// TODO: refactor here, the dependency on config is uncomfortable
 	backdrops := map[string]*cfgtypes.Backdrop{}
-	configfiles.GimmeConfigFiles(&configfiles.Options{
+	_, err := configfiles.GimmeConfigFiles(&configfiles.Options{
 		Name:                      "dodo",
 		Extensions:                []string{"yaml", "yml", "json"},
 		IncludeWorkingDirectories: true,
@@ -56,16 +57,22 @@ func (image *Image) Build() (string, error) {
 		},
 	})
 
+	if err != nil {
+		log.L().Error("error finding config files", "error", err)
+	}
+
 	for _, name := range image.config.Dependencies {
 		for _, backdrop := range backdrops {
 			if backdrop.Build != nil && backdrop.Build.ImageName == name {
 				if image.config.ForceRebuild {
 					backdrop.Build.ForceRebuild = true
 				}
+
 				dependency, err := NewImage(image.client, image.authConfigs, backdrop.Build)
 				if err != nil {
 					return "", err
 				}
+
 				if _, err := dependency.Get(); err != nil {
 					return "", err
 				}
@@ -77,6 +84,7 @@ func (image *Image) Build() (string, error) {
 	if err != nil {
 		return "", err
 	}
+
 	defer contextData.cleanup()
 
 	imageID := ""
@@ -99,6 +107,7 @@ func (image *Image) Build() (string, error) {
 			if err != nil {
 				return err
 			}
+
 			return progressui.DisplaySolveStatus(context.TODO(), "", cons, os.Stderr, displayCh)
 		})
 	}
@@ -110,6 +119,7 @@ func (image *Image) Build() (string, error) {
 		}()
 
 		imageID, err = image.runBuild(contextData, displayCh)
+
 		return err
 	})
 
@@ -119,7 +129,7 @@ func (image *Image) Build() (string, error) {
 	}
 
 	if imageID == "" {
-		return "", errMissingImageID
+		return "", ErrMissingImageID
 	}
 
 	return imageID, nil
@@ -165,13 +175,16 @@ func (image *Image) runBuild(contextData *contextData, displayCh chan *client.So
 
 func handleBuildResult(response io.Reader, displayCh chan *client.SolveStatus, printOutput bool) (string, error) {
 	var imageID string
+
 	decoder := json.NewDecoder(response)
+
 	for {
 		var msg jsonmessage.JSONMessage
 		if err := decoder.Decode(&msg); err != nil {
 			if err == io.EOF {
 				return imageID, nil
 			}
+
 			return "", err
 		}
 
@@ -185,13 +198,16 @@ func handleBuildResult(response io.Reader, displayCh chan *client.SolveStatus, p
 				if err := json.Unmarshal(*msg.Aux, &result); err != nil {
 					continue
 				}
+
 				imageID = result.ID
 			} else if printOutput && msg.ID == "moby.buildkit.trace" {
 				var resp controlapi.StatusResponse
 				var dt []byte
+
 				if err := json.Unmarshal(*msg.Aux, &dt); err != nil {
 					continue
 				}
+
 				if err := (&resp).Unmarshal(dt); err != nil {
 					continue
 				}

@@ -11,6 +11,7 @@ import (
 func TestBuildImage(t *testing.T) {
 	displayCh := make(chan *client.SolveStatus)
 	defer close(displayCh)
+
 	image := fakeImage(t, &types.BuildInfo{
 		Context: "./test",
 	})
@@ -25,6 +26,7 @@ func TestBuildImage(t *testing.T) {
 func TestBuildInlineImage(t *testing.T) {
 	displayCh := make(chan *client.SolveStatus)
 	defer close(displayCh)
+
 	image := fakeImage(t, &types.BuildInfo{
 		InlineDockerfile: []string{"FROM scratch"},
 	})

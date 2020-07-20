@@ -9,6 +9,7 @@ import (
 func DecodeBuildInfo(target interface{}) decoder.Decoding {
 	// TODO: wtf this cast
 	build := *(target.(**BuildInfo))
+
 	return decoder.Kinds(map[reflect.Kind]decoder.Decoding{
 		reflect.Map: decoder.Keys(map[string]decoder.Decoding{
 			"name":       decoder.String(&build.ImageName),

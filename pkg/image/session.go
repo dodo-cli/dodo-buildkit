@@ -46,6 +46,7 @@ func readOrCreateSessionID() (string, error) {
 		if err != nil {
 			return "", err
 		}
+
 		return string(sessionID), nil
 	}
 

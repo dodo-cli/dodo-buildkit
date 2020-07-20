@@ -1,12 +1,27 @@
 package types
 
 import (
+	"fmt"
 	"reflect"
 	"strings"
 
 	"github.com/oclaussen/dodo/pkg/decoder"
 	"github.com/oclaussen/dodo/pkg/types"
 )
+
+const ErrSSHAgentFormat types.FormatError = "invalid ssh agent format"
+
+func (agent *SshAgent) FromString(spec string) error {
+	switch values := strings.SplitN(spec, "=", 2); len(values) {
+	case 2:
+		agent.Id = values[0]
+		agent.IdentityFile = values[1]
+	default:
+		return fmt.Errorf("%s: %w", spec, ErrSSHAgentFormat)
+	}
+
+	return nil
+}
 
 func NewSSHAgent() decoder.Producer {
 	return func() (interface{}, decoder.Decoding) {
@@ -18,6 +33,7 @@ func NewSSHAgent() decoder.Producer {
 func DecodeSSHAgent(target interface{}) decoder.Decoding {
 	// TODO: wtf this cast
 	agent := *(target.(**SshAgent))
+
 	return decoder.Kinds(map[reflect.Kind]decoder.Decoding{
 		reflect.Map: decoder.Keys(map[string]decoder.Decoding{
 			"id":   decoder.String(&agent.Id),
@@ -26,13 +42,8 @@ func DecodeSSHAgent(target interface{}) decoder.Decoding {
 		reflect.String: func(d *decoder.Decoder, config interface{}) {
 			var decoded string
 			decoder.String(&decoded)(d, config)
-			switch values := strings.SplitN(decoded, "=", 2); len(values) {
-			case 2:
-				agent.Id = values[0]
-				agent.IdentityFile = values[1]
-			default:
-				d.Error("invalid device")
-				return
+			if err := agent.FromString(decoded); err != nil {
+				d.Error(err)
 			}
 		},
 	})

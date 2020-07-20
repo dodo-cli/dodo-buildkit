@@ -4,6 +4,7 @@ import (
 	"github.com/dodo/dodo-build/pkg/image"
 	"github.com/dodo/dodo-build/pkg/types"
 	"github.com/dodo/dodo-docker/pkg/client"
+	log "github.com/hashicorp/go-hclog"
 	"github.com/oclaussen/dodo/pkg/decoder"
 	"github.com/oclaussen/go-gimme/configfiles"
 	"github.com/spf13/cobra"
@@ -18,7 +19,7 @@ func NewBuildCommand() *cobra.Command {
 		Args:                  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			backdrops := map[string]*types.Backdrop{}
-			configfiles.GimmeConfigFiles(&configfiles.Options{
+			_, err := configfiles.GimmeConfigFiles(&configfiles.Options{
 				Name:                      "dodo",
 				Extensions:                []string{"yaml", "yml", "json"},
 				IncludeWorkingDirectories: true,
@@ -30,6 +31,10 @@ func NewBuildCommand() *cobra.Command {
 					return false
 				},
 			})
+
+			if err != nil {
+				log.L().Error("error finding config files", "error", err)
+			}
 
 			for _, backdrop := range backdrops {
 				if backdrop.Build != nil && backdrop.Build.ImageName == args[0] {

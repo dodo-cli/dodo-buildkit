@@ -12,7 +12,6 @@ func (session *fakeSession) ID() string {
 }
 
 func (session *fakeSession) Allow(buildkit.Attachable) {
-	return
 }
 
 func (session *fakeSession) Run(context.Context, buildkit.Dialer) error {

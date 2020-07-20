@@ -6,16 +6,20 @@ import (
 
 	"github.com/docker/docker/api/types"
 	dodotypes "github.com/dodo/dodo-build/pkg/types"
-	"github.com/pkg/errors"
 	"golang.org/x/net/context"
 )
 
-var (
-	errMissingImageID = errors.New(
-		"build complete, but the server did not send an image id")
+const (
+	ErrNoClient       ImageError = "client may not be nil"
+	ErrMissingImageID ImageError = "build complete, but the server did not send an image id"
 )
 
-// Image represents the data necessary to build a docker image
+type ImageError string
+
+func (e ImageError) Error() string {
+	return string(e)
+}
+
 type Image struct {
 	config      *dodotypes.BuildInfo
 	client      Client
@@ -23,17 +27,15 @@ type Image struct {
 	session     session
 }
 
-// Client represents a docker client that can do everything this package needs
 type Client interface {
 	DialHijack(context.Context, string, string, map[string][]string) (net.Conn, error)
 	ImageList(context.Context, types.ImageListOptions) ([]types.ImageSummary, error)
 	ImageBuild(context.Context, io.Reader, types.ImageBuildOptions) (types.ImageBuildResponse, error)
 }
 
-// NewImage initializes and validates a new Image object
 func NewImage(client Client, authConfigs map[string]types.AuthConfig, config *dodotypes.BuildInfo) (*Image, error) {
 	if client == nil {
-		return nil, errors.New("client may not be nil")
+		return nil, ErrNoClient
 	}
 
 	session, err := prepareSession(config.Context)

@@ -16,6 +16,7 @@ func NewSecret() decoder.Producer {
 func DecodeSecret(target interface{}) decoder.Decoding {
 	// TODO: wtf this cast
 	secret := *(target.(**Secret))
+
 	return decoder.Kinds(map[reflect.Kind]decoder.Decoding{
 		reflect.Map: decoder.Keys(map[string]decoder.Decoding{
 			"id":     decoder.String(&secret.Id),

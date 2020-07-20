@@ -3,9 +3,9 @@ package main
 import (
 	"os"
 
+	"github.com/dodo/dodo-build/pkg/command"
 	build "github.com/dodo/dodo-build/pkg/plugin"
 	dodo "github.com/oclaussen/dodo/pkg/plugin"
-	"github.com/dodo/dodo-build/pkg/command"
 )
 
 func main() {

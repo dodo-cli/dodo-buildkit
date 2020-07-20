@@ -50,6 +50,7 @@ func (client *fakeImageClient) ImageBuild(
 	buildResult := types.BuildResult{ID: client.willBuildAs}
 	auxJSON, err := json.Marshal(buildResult)
 	assert.Nil(client.t, err)
+
 	rawJSON := json.RawMessage(auxJSON)
 	message := jsonmessage.JSONMessage{
 		ID:     "moby.image.id",
@@ -58,5 +59,6 @@ func (client *fakeImageClient) ImageBuild(
 	}
 	response, err := json.Marshal(message)
 	assert.Nil(client.t, err)
+
 	return types.ImageBuildResponse{Body: ioutil.NopCloser(bytes.NewReader(response))}, nil
 }

@@ -9,13 +9,13 @@ import (
 
 	"github.com/docker/docker/pkg/urlutil"
 	"github.com/dodo/dodo-build/pkg/types"
+	log "github.com/hashicorp/go-hclog"
 	buildkit "github.com/moby/buildkit/session"
 	"github.com/moby/buildkit/session/auth/authprovider"
 	"github.com/moby/buildkit/session/filesync"
 	"github.com/moby/buildkit/session/secrets/secretsprovider"
 	"github.com/moby/buildkit/session/sshforward/sshprovider"
 	"github.com/pkg/errors"
-	log "github.com/sirupsen/logrus"
 	fstypes "github.com/tonistiigi/fsutil/types"
 )
 
@@ -33,8 +33,10 @@ func (data *contextData) tempdir() (string, error) {
 		if err != nil {
 			return "", err
 		}
+
 		data.contextDir = dir
 	}
+
 	return data.contextDir, nil
 }
 
@@ -45,7 +47,8 @@ func (data *contextData) cleanup() {
 }
 
 func prepareContext(config *types.BuildInfo, session session) (*contextData, error) {
-	log.Debug("preparing context")
+	log.L().Debug("preparing context")
+
 	data := contextData{
 		remote:         clientSession,
 		dockerfileName: config.Dockerfile,
@@ -58,22 +61,20 @@ func prepareContext(config *types.BuildInfo, session session) (*contextData, err
 			data.cleanup()
 			return nil, err
 		}
-		syncedDirs = append(syncedDirs, filesync.SyncedDir{Name: "context", Dir: dir})
 
+		syncedDirs = append(syncedDirs, filesync.SyncedDir{Name: "context", Dir: dir})
 	} else if _, err := os.Stat(config.Context); err == nil {
 		syncedDirs = append(syncedDirs, filesync.SyncedDir{
 			Name: "context",
 			Dir:  config.Context,
-			Map: func(stat *fstypes.Stat) bool {
+			Map: func(_ string, stat *fstypes.Stat) bool {
 				stat.Uid = 0
 				stat.Gid = 0
 				return true
 			},
 		})
-
 	} else if urlutil.IsURL(config.Context) {
 		data.remote = config.Context
-
 	} else {
 		return nil, errors.Errorf("Context directory does not exist: %v", config.Context)
 	}
@@ -89,6 +90,7 @@ func prepareContext(config *types.BuildInfo, session session) (*contextData, err
 			data.cleanup()
 			return nil, err
 		}
+
 		tempfile := filepath.Join(dir, "Dockerfile")
 		if err := writeDockerfile(tempfile, steps); err != nil {
 			data.cleanup()
@@ -97,46 +99,51 @@ func prepareContext(config *types.BuildInfo, session session) (*contextData, err
 
 		data.dockerfileName = filepath.Base(tempfile)
 		dockerfileDir := filepath.Dir(tempfile)
+
 		syncedDirs = append(syncedDirs, filesync.SyncedDir{
 			Name: "dockerfile",
 			Dir:  dockerfileDir,
 		})
-
 	} else if config.Dockerfile != "" && data.remote == clientSession {
 		data.dockerfileName = filepath.Base(config.Dockerfile)
 		dockerfileDir := filepath.Dir(config.Dockerfile)
+
 		syncedDirs = append(syncedDirs, filesync.SyncedDir{
 			Name: "dockerfile",
 			Dir:  dockerfileDir,
 		})
-
 	}
 
-	log.WithFields(log.Fields{
-		"remote":         data.remote,
-		"dockerfileName": data.dockerfileName,
-		"contextDir":     data.contextDir,
-		"config":         config,
-	}).Debug("prepared context")
+	log.L().Debug(
+		"prepared context",
+		"remote", data.remote,
+		"dockerfileName", data.dockerfileName,
+		"contextDir", data.contextDir,
+		"config", config,
+	)
 
 	if len(syncedDirs) > 0 {
 		session.Allow(filesync.NewFSSyncProvider(syncedDirs))
-		log.WithFields(log.Fields{"dirs": syncedDirs}).Debug("added context directories")
+		log.L().Debug("added context directories", "dirs", syncedDirs)
 	}
 
-	session.Allow(authprovider.NewDockerAuthProvider())
+	session.Allow(authprovider.NewDockerAuthProvider(ioutil.Discard)) // TODO: why discard?
+
 	if len(config.Secrets) > 0 {
 		provider, err := secretsProvider(config)
 		if err != nil {
 			return nil, err
 		}
+
 		session.Allow(provider)
 	}
+
 	if len(config.SshAgents) > 0 {
 		provider, err := sshAgentProvider(config)
 		if err != nil {
 			return nil, err
 		}
+
 		session.Allow(provider)
 	}
 
@@ -151,13 +158,12 @@ func writeDockerfile(path string, content string) error {
 	defer file.Close()
 
 	rc := ioutil.NopCloser(bytes.NewReader([]byte(content)))
-	_, err = io.Copy(file, rc)
-	if err != nil {
+
+	if _, err := io.Copy(file, rc); err != nil {
 		return err
 	}
 
-	err = rc.Close()
-	if err != nil {
+	if err := rc.Close(); err != nil {
 		return err
 	}
 
@@ -166,6 +172,7 @@ func writeDockerfile(path string, content string) error {
 
 func secretsProvider(config *types.BuildInfo) (buildkit.Attachable, error) {
 	sources := make([]secretsprovider.FileSource, 0, len(config.Secrets))
+
 	for _, secret := range config.Secrets {
 		source := secretsprovider.FileSource{
 			ID:       secret.Id,
@@ -173,15 +180,18 @@ func secretsProvider(config *types.BuildInfo) (buildkit.Attachable, error) {
 		}
 		sources = append(sources, source)
 	}
+
 	store, err := secretsprovider.NewFileStore(sources)
 	if err != nil {
 		return nil, err
 	}
+
 	return secretsprovider.NewSecretProvider(store), nil
 }
 
 func sshAgentProvider(config *types.BuildInfo) (buildkit.Attachable, error) {
 	configs := make([]sshprovider.AgentConfig, 0, len(config.SshAgents))
+
 	for _, agent := range config.SshAgents {
 		config := sshprovider.AgentConfig{
 			ID:    agent.Id,
@@ -189,5 +199,6 @@ func sshAgentProvider(config *types.BuildInfo) (buildkit.Attachable, error) {
 		}
 		configs = append(configs, config)
 	}
+
 	return sshprovider.NewSSHAgentProvider(configs)
 }
