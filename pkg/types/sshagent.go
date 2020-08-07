@@ -25,7 +25,7 @@ func (agent *SshAgent) FromString(spec string) error {
 
 func NewSSHAgent() decoder.Producer {
 	return func() (interface{}, decoder.Decoding) {
-		target := SshAgent{}
+		target := &SshAgent{}
 		return &target, DecodeSSHAgent(&target)
 	}
 }

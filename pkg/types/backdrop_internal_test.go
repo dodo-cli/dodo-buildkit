@@ -21,6 +21,7 @@ image:
   no_cache: true
   force_rebuild: true
   force_pull: true
+  ssh: 'default=path_to_file'
 `
 
 func TestFullExample(t *testing.T) {
@@ -36,6 +37,9 @@ func TestFullExample(t *testing.T) {
 	assert.True(t, config.Build.NoCache)
 	assert.True(t, config.Build.ForceRebuild)
 	assert.True(t, config.Build.ForcePull)
+	assert.Equal(t, 1, len(config.Build.SshAgents))
+	assert.Equal(t, "default", config.Build.SshAgents[0].Id)
+	assert.Equal(t, "path_to_file", config.Build.SshAgents[0].IdentityFile)
 }
 
 func getExampleConfig(t *testing.T, yamlConfig string) *Backdrop {

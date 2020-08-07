@@ -10,8 +10,7 @@ import (
 
 func main() {
 	if os.Getenv(dodo.MagicCookieKey) == dodo.MagicCookieValue {
-		build.RegisterPlugin()
-		dodo.ServePlugins()
+		dodo.ServePlugins(&build.Configuration{})
 	} else {
 		cmd := command.NewBuildCommand()
 		if err := cmd.Execute(); err != nil {
