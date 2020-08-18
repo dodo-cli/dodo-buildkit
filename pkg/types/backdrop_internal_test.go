@@ -3,7 +3,7 @@ package types
 import (
 	"testing"
 
-	"github.com/oclaussen/dodo/pkg/decoder"
+	"github.com/dodo/dodo-core/pkg/decoder"
 	"github.com/stretchr/testify/assert"
 	"gopkg.in/yaml.v2"
 )

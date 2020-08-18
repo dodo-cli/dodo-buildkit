@@ -3,16 +3,41 @@ package command
 import (
 	"github.com/dodo/dodo-build/pkg/image"
 	"github.com/dodo/dodo-build/pkg/types"
+	"github.com/dodo/dodo-core/pkg/decoder"
+	"github.com/dodo/dodo-core/pkg/plugin"
+	"github.com/dodo/dodo-core/pkg/plugin/command"
 	"github.com/dodo/dodo-docker/pkg/client"
 	log "github.com/hashicorp/go-hclog"
-	"github.com/oclaussen/dodo/pkg/decoder"
 	"github.com/oclaussen/go-gimme/configfiles"
 	"github.com/spf13/cobra"
 )
 
+const name = "build"
+
+type Command struct {
+	cmd *cobra.Command
+}
+
+func (p *Command) Type() plugin.Type {
+	return command.Type
+}
+
+func (p *Command) Init() error {
+	p.cmd = NewBuildCommand()
+	return nil
+}
+
+func (p *Command) Name() string {
+	return name
+}
+
+func (p *Command) GetCobraCommand() *cobra.Command {
+	return p.cmd
+}
+
 func NewBuildCommand() *cobra.Command {
 	return &cobra.Command{
-		Use:                   "build",
+		Use:                   name,
 		Short:                 "Build all required images for backdrop without running it",
 		DisableFlagsInUseLine: true,
 		SilenceUsage:          true,

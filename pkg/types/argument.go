@@ -5,8 +5,8 @@ import (
 	"os"
 	"strings"
 
-	"github.com/oclaussen/dodo/pkg/decoder"
-	"github.com/oclaussen/dodo/pkg/types"
+	"github.com/dodo/dodo-core/pkg/decoder"
+	"github.com/dodo/dodo-core/pkg/types"
 )
 
 const ErrArgumentFormat types.FormatError = "invalid argument format"

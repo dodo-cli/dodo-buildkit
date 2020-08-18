@@ -5,7 +5,7 @@ import (
 
 	"github.com/dodo/dodo-build/pkg/command"
 	build "github.com/dodo/dodo-build/pkg/plugin"
-	dodo "github.com/oclaussen/dodo/pkg/plugin"
+	dodo "github.com/dodo/dodo-core/pkg/plugin"
 )
 
 func main() {
