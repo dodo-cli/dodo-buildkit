@@ -3,7 +3,7 @@ package types
 import (
 	"reflect"
 
-	"github.com/dodo/dodo-core/pkg/decoder"
+	"github.com/dodo-cli/dodo-core/pkg/decoder"
 )
 
 func DecodeBuildInfo(target interface{}) decoder.Decoding {

@@ -25,4 +25,4 @@ build: pkg/types/build_types.pb.go
 	gox -arch="amd64" -os="darwin linux" ./...
 
 %.pb.go: %.proto
-	protoc --go_out=plugins=grpc:. --go_opt=module=github.com/dodo/dodo-build $<
+	protoc --go_out=plugins=grpc:. --go_opt=module=github.com/dodo-cli/dodo-build $<

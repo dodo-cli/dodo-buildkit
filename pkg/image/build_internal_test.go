@@ -3,7 +3,7 @@ package image
 import (
 	"testing"
 
-	"github.com/dodo/dodo-build/pkg/types"
+	"github.com/dodo-cli/dodo-build/pkg/types"
 	"github.com/moby/buildkit/client"
 	"github.com/stretchr/testify/assert"
 )

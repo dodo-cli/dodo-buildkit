@@ -1,7 +1,7 @@
 syntax = "proto3";
-package com.github.dodo.dodo_build.types;
+package com.github.dodo_cli.dodo_build.types;
 
-option go_package = "github.com/dodo/dodo-build/pkg/types";
+option go_package = "github.com/dodo-cli/dodo-build/pkg/types";
 
 message Backdrop {
   string name = 1;

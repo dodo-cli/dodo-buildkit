@@ -1,12 +1,12 @@
 package command
 
 import (
-	"github.com/dodo/dodo-build/pkg/image"
-	"github.com/dodo/dodo-build/pkg/types"
-	"github.com/dodo/dodo-core/pkg/decoder"
-	"github.com/dodo/dodo-core/pkg/plugin"
-	"github.com/dodo/dodo-core/pkg/plugin/command"
-	"github.com/dodo/dodo-docker/pkg/client"
+	"github.com/dodo-cli/dodo-build/pkg/image"
+	"github.com/dodo-cli/dodo-build/pkg/types"
+	"github.com/dodo-cli/dodo-core/pkg/decoder"
+	"github.com/dodo-cli/dodo-core/pkg/plugin"
+	"github.com/dodo-cli/dodo-core/pkg/plugin/command"
+	"github.com/dodo-cli/dodo-docker/pkg/client"
 	log "github.com/hashicorp/go-hclog"
 	"github.com/oclaussen/go-gimme/configfiles"
 	"github.com/spf13/cobra"

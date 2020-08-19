@@ -5,8 +5,8 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/dodo/dodo-core/pkg/decoder"
-	"github.com/dodo/dodo-core/pkg/types"
+	"github.com/dodo-cli/dodo-core/pkg/decoder"
+	"github.com/dodo-cli/dodo-core/pkg/types"
 )
 
 const ErrSSHAgentFormat types.FormatError = "invalid ssh agent format"

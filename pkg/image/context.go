@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 
 	"github.com/docker/docker/pkg/urlutil"
-	"github.com/dodo/dodo-build/pkg/types"
+	"github.com/dodo-cli/dodo-build/pkg/types"
 	log "github.com/hashicorp/go-hclog"
 	buildkit "github.com/moby/buildkit/session"
 	"github.com/moby/buildkit/session/auth/authprovider"

@@ -9,7 +9,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/dodo/dodo-core/pkg/appconfig"
+	"github.com/dodo-cli/dodo-core/pkg/appconfig"
 	buildkit "github.com/moby/buildkit/session"
 	"github.com/pkg/errors"
 	"golang.org/x/net/context"
