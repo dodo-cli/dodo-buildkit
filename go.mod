@@ -12,7 +12,7 @@ replace (
 require (
 	github.com/containerd/console v1.0.0
 	github.com/docker/docker v17.12.0-ce-rc1.0.20200531234253-77e06fda0c94+incompatible
-	github.com/dodo-cli/dodo-core v0.0.0-20200819130315-3913e164603d
+	github.com/dodo-cli/dodo-core v0.0.0-20200821135148-cb332de21be2
 	github.com/dodo-cli/dodo-docker v0.0.0-20200819134644-596e4191c197
 	github.com/golang/protobuf v1.4.2
 	github.com/hashicorp/go-hclog v0.14.1
