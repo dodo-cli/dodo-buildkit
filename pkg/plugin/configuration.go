@@ -1,6 +1,8 @@
 package plugin
 
 import (
+	"fmt"
+
 	"github.com/dodo-cli/dodo-build/pkg/image"
 	"github.com/dodo-cli/dodo-build/pkg/types"
 	"github.com/dodo-cli/dodo-core/pkg/decoder"
@@ -36,8 +38,8 @@ func (p *Configuration) UpdateConfiguration(backdrop *dodo.Backdrop) (*dodo.Back
 		},
 	})
 
-	config, ok := backdrops[backdrop.Name]
-	if !ok {
+	config, err := findBackdrop(backdrops, backdrop.Name)
+	if err != nil {
 		return &dodo.Backdrop{}, nil
 	}
 
@@ -59,6 +61,22 @@ func (p *Configuration) UpdateConfiguration(backdrop *dodo.Backdrop) (*dodo.Back
 	backdrop.ImageId = imageID
 
 	return backdrop, nil
+}
+
+func findBackdrop(backdrops map[string]*types.Backdrop, name string) (*types.Backdrop, error) {
+	if result, ok := backdrops[name]; ok {
+		return result, nil
+	}
+
+	for _, b := range backdrops {
+		for _, a := range b.Aliases {
+			if a == name {
+				return b, nil
+			}
+		}
+	}
+
+	return nil, fmt.Errorf("could not find any configuration for backdrop '%s'", name)
 }
 
 func (p *Configuration) Provision(_ string) error {
