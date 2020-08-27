@@ -1,6 +1,8 @@
 package command
 
 import (
+	"fmt"
+
 	"github.com/dodo-cli/dodo-build/pkg/image"
 	"github.com/dodo-cli/dodo-build/pkg/types"
 	"github.com/dodo-cli/dodo-core/pkg/decoder"
@@ -68,6 +70,8 @@ func NewBuildCommand() *cobra.Command {
 						return err
 					}
 
+					backdrop.Build.ForceRebuild = true
+
 					img, err := image.NewImage(c, client.LoadAuthConfig(), backdrop.Build)
 					if err != nil {
 						return err
@@ -77,8 +81,8 @@ func NewBuildCommand() *cobra.Command {
 					return err
 				}
 			}
-			// TODO: error when image config doesn't exist
-			return nil
+
+			return fmt.Errorf("could not find any configuration with image '%s' ", args[0])
 		},
 	}
 }
