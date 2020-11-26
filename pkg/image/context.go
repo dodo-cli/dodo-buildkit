@@ -171,17 +171,17 @@ func writeDockerfile(path string, content string) error {
 }
 
 func secretsProvider(config *types.BuildInfo) (buildkit.Attachable, error) {
-	sources := make([]secretsprovider.FileSource, 0, len(config.Secrets))
+	sources := make([]secretsprovider.Source, 0, len(config.Secrets))
 
 	for _, secret := range config.Secrets {
-		source := secretsprovider.FileSource{
+		source := secretsprovider.Source{
 			ID:       secret.Id,
 			FilePath: secret.Path,
 		}
 		sources = append(sources, source)
 	}
 
-	store, err := secretsprovider.NewFileStore(sources)
+	store, err := secretsprovider.NewStore(sources)
 	if err != nil {
 		return nil, err
 	}
