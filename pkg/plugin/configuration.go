@@ -5,13 +5,15 @@ import (
 
 	"github.com/dodo-cli/dodo-build/pkg/image"
 	"github.com/dodo-cli/dodo-build/pkg/types"
+	api "github.com/dodo-cli/dodo-core/api/v1alpha1"
 	"github.com/dodo-cli/dodo-core/pkg/decoder"
 	"github.com/dodo-cli/dodo-core/pkg/plugin"
 	"github.com/dodo-cli/dodo-core/pkg/plugin/configuration"
-	dodo "github.com/dodo-cli/dodo-core/pkg/types"
 	"github.com/dodo-cli/dodo-docker/pkg/client"
 	"github.com/oclaussen/go-gimme/configfiles"
 )
+
+var _ configuration.Configuration = &Configuration{}
 
 type Configuration struct{}
 
@@ -23,7 +25,11 @@ func (p *Configuration) Init() error {
 	return nil
 }
 
-func (p *Configuration) UpdateConfiguration(backdrop *dodo.Backdrop) (*dodo.Backdrop, error) {
+func (p *Configuration) PluginInfo() (*api.PluginInfo, error) {
+	return &api.PluginInfo{Name: "build"}, nil
+}
+
+func (p *Configuration) GetBackdrop(alias string) (*api.Backdrop, error) {
 	backdrops := map[string]*types.Backdrop{}
 	configfiles.GimmeConfigFiles(&configfiles.Options{
 		Name:                      "dodo",
@@ -38,9 +44,9 @@ func (p *Configuration) UpdateConfiguration(backdrop *dodo.Backdrop) (*dodo.Back
 		},
 	})
 
-	config, err := findBackdrop(backdrops, backdrop.Name)
+	config, err := findBackdrop(backdrops, alias)
 	if err != nil {
-		return &dodo.Backdrop{}, nil
+		return &api.Backdrop{}, nil
 	}
 
 	c, err := client.GetDockerClient()
@@ -58,9 +64,7 @@ func (p *Configuration) UpdateConfiguration(backdrop *dodo.Backdrop) (*dodo.Back
 		return nil, err
 	}
 
-	backdrop.ImageId = imageID
-
-	return backdrop, nil
+	return &api.Backdrop{ImageId: imageID}, nil
 }
 
 func findBackdrop(backdrops map[string]*types.Backdrop, name string) (*types.Backdrop, error) {
@@ -79,6 +83,6 @@ func findBackdrop(backdrops map[string]*types.Backdrop, name string) (*types.Bac
 	return nil, fmt.Errorf("could not find any configuration for backdrop '%s'", name)
 }
 
-func (p *Configuration) Provision(_ string) error {
-	return nil
+func (p *Configuration) ListBackdrops() ([]*api.Backdrop, error) {
+	return []*api.Backdrop{}, nil // TODO: implement list
 }

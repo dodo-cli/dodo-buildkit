@@ -10,7 +10,7 @@ replace (
 require (
 	github.com/containerd/console v1.0.1
 	github.com/docker/docker v20.10.0-beta1.0.20201110211921-af34b94a78a1+incompatible
-	github.com/dodo-cli/dodo-core v0.0.0-20201125174747-1bda489d290a
+	github.com/dodo-cli/dodo-core v0.0.0-20210130140831-83faf976a6d3
 	github.com/dodo-cli/dodo-docker v0.0.0-20201125175711-01be1c64860a
 	github.com/golang/protobuf v1.4.2
 	github.com/hashicorp/go-hclog v0.15.0
