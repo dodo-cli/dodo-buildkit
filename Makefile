@@ -1,8 +1,9 @@
+.PHONY: all
 all: clean test build
 
 .PHONY: clean
 clean:
-	rm -f dodo-build_*
+	rm -rf ./dist
 
 .PHONY: fmt
 fmt:
@@ -14,15 +15,15 @@ tidy:
 
 .PHONY: lint
 lint:
-	golangci-lint run --enable-all
+	CGO_ENABLED=0 golangci-lint run --enable-all
 
 .PHONY: test
 test: pkg/types/build_types.pb.go
-	go test -cover ./...
+	CGO_ENABLED=0 go test -cover ./...
 
 .PHONY: build
 build: pkg/types/build_types.pb.go
-	gox -arch="amd64" -os="darwin linux" ./...
+	goreleaser build --snapshot --rm-dist
 
 %.pb.go: %.proto
 	protoc --go_out=plugins=grpc:. --go_opt=module=github.com/dodo-cli/dodo-build $<
