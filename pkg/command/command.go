@@ -3,9 +3,9 @@ package command
 import (
 	"fmt"
 
-	api "github.com/dodo-cli/dodo-core/api/v1alpha1"
 	"github.com/dodo-cli/dodo-build/pkg/image"
 	"github.com/dodo-cli/dodo-build/pkg/types"
+	api "github.com/dodo-cli/dodo-core/api/v1alpha1"
 	"github.com/dodo-cli/dodo-core/pkg/decoder"
 	"github.com/dodo-cli/dodo-core/pkg/plugin"
 	"github.com/dodo-cli/dodo-core/pkg/plugin/command"
@@ -23,13 +23,12 @@ type Command struct {
 	cmd *cobra.Command
 }
 
-func (p *Command) Type() plugin.Type {
-	return command.Type
+func New() *Command {
+	return &Command{cmd: NewBuildCommand()}
 }
 
-func (p *Command) Init() error {
-	p.cmd = NewBuildCommand()
-	return nil
+func (p *Command) Type() plugin.Type {
+	return command.Type
 }
 
 func (p *Command) PluginInfo() (*api.PluginInfo, error) {

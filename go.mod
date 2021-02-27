@@ -10,8 +10,8 @@ replace (
 require (
 	github.com/containerd/console v1.0.1
 	github.com/docker/docker v20.10.2+incompatible
-	github.com/dodo-cli/dodo-core v0.0.0-20210130140831-83faf976a6d3
-	github.com/dodo-cli/dodo-docker v0.0.0-20210202161347-13570e952c1c
+	github.com/dodo-cli/dodo-core v0.0.0-20210227122017-525b474c71cd
+	github.com/dodo-cli/dodo-docker v0.0.0-20210227141438-fa257f06ed4a
 	github.com/golang/protobuf v1.4.2
 	github.com/hashicorp/go-hclog v0.15.0
 	github.com/moby/buildkit v0.8.0-rc3
