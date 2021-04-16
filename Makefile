@@ -18,12 +18,9 @@ lint:
 	CGO_ENABLED=0 golangci-lint run --enable-all
 
 .PHONY: test
-test: pkg/types/build_types.pb.go
+test:
 	CGO_ENABLED=0 go test -cover ./...
 
 .PHONY: build
-build: pkg/types/build_types.pb.go
+build:
 	goreleaser build --snapshot --rm-dist
-
-%.pb.go: %.proto
-	protoc --go_out=plugins=grpc:. --go_opt=module=github.com/dodo-cli/dodo-build $<

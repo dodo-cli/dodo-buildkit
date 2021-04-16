@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 
 	"github.com/docker/docker/pkg/urlutil"
-	"github.com/dodo-cli/dodo-build/pkg/types"
+	api "github.com/dodo-cli/dodo-core/api/v1alpha1"
 	log "github.com/hashicorp/go-hclog"
 	buildkit "github.com/moby/buildkit/session"
 	"github.com/moby/buildkit/session/auth/authprovider"
@@ -46,7 +46,7 @@ func (data *contextData) cleanup() {
 	}
 }
 
-func prepareContext(config *types.BuildInfo, session session) (*contextData, error) {
+func prepareContext(config *api.BuildInfo, session session) (*contextData, error) {
 	log.L().Debug("preparing context")
 
 	data := contextData{
@@ -170,7 +170,7 @@ func writeDockerfile(path string, content string) error {
 	return nil
 }
 
-func secretsProvider(config *types.BuildInfo) (buildkit.Attachable, error) {
+func secretsProvider(config *api.BuildInfo) (buildkit.Attachable, error) {
 	sources := make([]secretsprovider.Source, 0, len(config.Secrets))
 
 	for _, secret := range config.Secrets {
@@ -189,7 +189,7 @@ func secretsProvider(config *types.BuildInfo) (buildkit.Attachable, error) {
 	return secretsprovider.NewSecretProvider(store), nil
 }
 
-func sshAgentProvider(config *types.BuildInfo) (buildkit.Attachable, error) {
+func sshAgentProvider(config *api.BuildInfo) (buildkit.Attachable, error) {
 	configs := make([]sshprovider.AgentConfig, 0, len(config.SshAgents))
 
 	for _, agent := range config.SshAgents {

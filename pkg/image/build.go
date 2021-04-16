@@ -11,14 +11,10 @@ import (
 	"github.com/docker/docker/api/types/filters"
 	"github.com/docker/docker/pkg/jsonmessage"
 	"github.com/docker/docker/pkg/stringid"
-	cfgtypes "github.com/dodo-cli/dodo-build/pkg/types"
-	"github.com/dodo-cli/dodo-core/pkg/decoder"
-	log "github.com/hashicorp/go-hclog"
 	controlapi "github.com/moby/buildkit/api/services/control"
 	"github.com/moby/buildkit/client"
 	"github.com/moby/buildkit/util/appcontext"
 	"github.com/moby/buildkit/util/progress/progressui"
-	"github.com/oclaussen/go-gimme/configfiles"
 	"golang.org/x/net/context"
 	"golang.org/x/sync/errgroup"
 )
@@ -42,44 +38,6 @@ func (image *Image) Get() (string, error) {
 }
 
 func (image *Image) Build() (string, error) {
-	// TODO: refactor here, the dependency on config is uncomfortable
-	backdrops := map[string]*cfgtypes.Backdrop{}
-	_, err := configfiles.GimmeConfigFiles(&configfiles.Options{
-		Name:                      "dodo",
-		Extensions:                []string{"yaml", "yml", "json"},
-		IncludeWorkingDirectories: true,
-		Filter: func(configFile *configfiles.ConfigFile) bool {
-			d := decoder.New(configFile.Path)
-			d.DecodeYaml(configFile.Content, &backdrops, map[string]decoder.Decoding{
-				"backdrops": decoder.Map(cfgtypes.NewBackdrop(), &backdrops),
-			})
-			return false
-		},
-	})
-
-	if err != nil {
-		log.L().Error("error finding config files", "error", err)
-	}
-
-	for _, name := range image.config.Dependencies {
-		for _, backdrop := range backdrops {
-			if backdrop.Build != nil && backdrop.Build.ImageName == name {
-				if image.config.ForceRebuild {
-					backdrop.Build.ForceRebuild = true
-				}
-
-				dependency, err := NewImage(image.client, image.authConfigs, backdrop.Build)
-				if err != nil {
-					return "", err
-				}
-
-				if _, err := dependency.Get(); err != nil {
-					return "", err
-				}
-			}
-		}
-	}
-
 	contextData, err := prepareContext(image.config, image.session)
 	if err != nil {
 		return "", err
