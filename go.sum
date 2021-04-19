@@ -396,8 +396,8 @@ github.com/docker/spdystream v0.0.0-20160310174837-449fdfce4d96 h1:cenwrSVm+Z7QL
 github.com/docker/spdystream v0.0.0-20160310174837-449fdfce4d96/go.mod h1:Qh8CwZgvJUkLughtfhJv5dyTYa91l1fOUCrgjqmcifM=
 github.com/docopt/docopt-go v0.0.0-20180111231733-ee0de3bc6815 h1:bWDMxwH3px2JBh6AyO7hdCn/PkvCZXii8TGj7sbtEbQ=
 github.com/docopt/docopt-go v0.0.0-20180111231733-ee0de3bc6815/go.mod h1:WwZ+bS3ebgob9U8Nd0kOddGdZWjyMGR8Wziv+TBNwSE=
-github.com/dodo-cli/dodo-core v0.0.0-20210318162438-a68f0193ede5 h1:Hbh/Z6iAG+PStyWp9XZ/qbAxT/1UH7UG8GOSDPrg9jQ=
-github.com/dodo-cli/dodo-core v0.0.0-20210318162438-a68f0193ede5/go.mod h1:DjkBThYYIgIibnBRT20ddF7PmwXJAQN/ISn7lUVQCZE=
+github.com/dodo-cli/dodo-core v0.0.0-20210419152444-ac57ff4ad07d h1:LKhJQFLuOLhwOk2P/wcWkEXZfr3C3jVXFHnF8h/dSOc=
+github.com/dodo-cli/dodo-core v0.0.0-20210419152444-ac57ff4ad07d/go.mod h1:DjkBThYYIgIibnBRT20ddF7PmwXJAQN/ISn7lUVQCZE=
 github.com/dustin/go-humanize v0.0.0-20171111073723-bb3d318650d4/go.mod h1:HtrtbFcZ19U5GC7JDqmcUSB87Iq5E25KnS6fMYU6eOk=
 github.com/dustin/go-humanize v1.0.0 h1:VSnTsYCnlFHaM2/igO1h6X3HA71jcobQuxemgkq4zYo=
 github.com/dustin/go-humanize v1.0.0/go.mod h1:HtrtbFcZ19U5GC7JDqmcUSB87Iq5E25KnS6fMYU6eOk=
