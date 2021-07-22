@@ -4,12 +4,12 @@ import (
 	"testing"
 
 	api "github.com/dodo-cli/dodo-core/api/v1alpha1"
-	"github.com/moby/buildkit/client"
+	controlapi "github.com/moby/buildkit/api/services/control"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestBuildImage(t *testing.T) {
-	displayCh := make(chan *client.SolveStatus)
+	displayCh := make(chan *controlapi.StatusResponse)
 	defer close(displayCh)
 
 	image := fakeImage(t, &api.BuildInfo{
@@ -24,7 +24,7 @@ func TestBuildImage(t *testing.T) {
 }
 
 func TestBuildInlineImage(t *testing.T) {
-	displayCh := make(chan *client.SolveStatus)
+	displayCh := make(chan *controlapi.StatusResponse)
 	defer close(displayCh)
 
 	image := fakeImage(t, &api.BuildInfo{

@@ -6,6 +6,7 @@ import (
 
 	"github.com/docker/docker/api/types"
 	api "github.com/dodo-cli/dodo-core/api/v1alpha1"
+	"github.com/dodo-cli/dodo-core/pkg/plugin"
 	"golang.org/x/net/context"
 )
 
@@ -25,6 +26,7 @@ type Image struct {
 	client      Client
 	authConfigs map[string]types.AuthConfig
 	session     session
+	stream      *plugin.StreamConfig
 }
 
 type Client interface {
@@ -33,7 +35,7 @@ type Client interface {
 	ImageBuild(context.Context, io.Reader, types.ImageBuildOptions) (types.ImageBuildResponse, error)
 }
 
-func NewImage(client Client, authConfigs map[string]types.AuthConfig, config *api.BuildInfo) (*Image, error) {
+func NewImage(client Client, authConfigs map[string]types.AuthConfig, config *api.BuildInfo, stream *plugin.StreamConfig) (*Image, error) {
 	if client == nil {
 		return nil, ErrNoClient
 	}
@@ -48,5 +50,6 @@ func NewImage(client Client, authConfigs map[string]types.AuthConfig, config *ap
 		authConfigs: authConfigs,
 		config:      config,
 		session:     session,
+		stream:      stream,
 	}, nil
 }

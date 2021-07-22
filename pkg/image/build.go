@@ -1,22 +1,23 @@
 package image
 
 import (
+	"context"
 	"encoding/json"
 	"io"
 	"net"
 	"os"
+	"strconv"
+	"time"
 
-	"github.com/containerd/console"
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/filters"
 	"github.com/docker/docker/pkg/jsonmessage"
 	"github.com/docker/docker/pkg/stringid"
+	"github.com/dodo-cli/dodo-buildkit/pkg/progress"
 	controlapi "github.com/moby/buildkit/api/services/control"
-	"github.com/moby/buildkit/client"
 	"github.com/moby/buildkit/util/appcontext"
-	"github.com/moby/buildkit/util/progress/progressui"
-	"golang.org/x/net/context"
 	"golang.org/x/sync/errgroup"
+	"golang.org/x/time/rate"
 )
 
 func (image *Image) Get() (string, error) {
@@ -46,7 +47,7 @@ func (image *Image) Build() (string, error) {
 	defer contextData.cleanup()
 
 	imageID := ""
-	displayCh := make(chan *client.SolveStatus)
+	displayCh := make(chan *controlapi.StatusResponse)
 
 	eg, _ := errgroup.WithContext(appcontext.Context())
 
@@ -59,14 +60,56 @@ func (image *Image) Build() (string, error) {
 		)
 	})
 
-	if image.config.ForceRebuild {
+	if image.stream != nil {
 		eg.Go(func() error {
-			cons, err := console.ConsoleFromFile(os.Stderr)
-			if err != nil {
-				return err
+			ctx := context.TODO()
+			t := progress.NewPrinter(
+				image.stream.Stderr,
+				int(image.stream.TerminalHeight),
+				int(image.stream.TerminalWidth),
+			)
+
+			tickerTimeout := 150 * time.Millisecond
+			displayTimeout := 100 * time.Millisecond
+
+			if v := os.Getenv("TTY_DISPLAY_RATE"); v != "" {
+				if r, err := strconv.ParseInt(v, 10, 64); err == nil {
+					tickerTimeout = time.Duration(r) * time.Millisecond
+					displayTimeout = time.Duration(r) * time.Millisecond
+				}
 			}
 
-			return progressui.DisplaySolveStatus(context.TODO(), "", cons, os.Stderr, displayCh)
+			var done bool
+			ticker := time.NewTicker(tickerTimeout)
+			defer ticker.Stop()
+
+			displayLimiter := rate.NewLimiter(rate.Every(displayTimeout), 1)
+
+			for {
+				select {
+				case <-ctx.Done():
+					return ctx.Err()
+				case <-ticker.C:
+				case ss, ok := <-displayCh:
+					if ok {
+						t.Update(ss)
+					} else {
+						done = true
+					}
+				}
+
+				if done {
+					t.Print(true)
+					t.PrintErrorLogs()
+					return nil
+				}
+
+				if displayLimiter.Allow() {
+					ticker.Stop()
+					ticker = time.NewTicker(tickerTimeout)
+					t.Print(false)
+				}
+			}
 		})
 	}
 
@@ -93,7 +136,7 @@ func (image *Image) Build() (string, error) {
 	return imageID, nil
 }
 
-func (image *Image) runBuild(contextData *contextData, displayCh chan *client.SolveStatus) (string, error) {
+func (image *Image) runBuild(contextData *contextData, displayCh chan *controlapi.StatusResponse) (string, error) {
 	args := map[string]*string{}
 	for _, arg := range image.config.Arguments {
 		args[arg.Key] = &arg.Value
@@ -128,13 +171,9 @@ func (image *Image) runBuild(contextData *contextData, displayCh chan *client.So
 	}
 	defer response.Body.Close()
 
-	return handleBuildResult(response.Body, displayCh, image.config.ForceRebuild)
-}
+	decoder := json.NewDecoder(response.Body)
 
-func handleBuildResult(response io.Reader, displayCh chan *client.SolveStatus, printOutput bool) (string, error) {
 	var imageID string
-
-	decoder := json.NewDecoder(response)
 
 	for {
 		var msg jsonmessage.JSONMessage
@@ -150,61 +189,32 @@ func handleBuildResult(response io.Reader, displayCh chan *client.SolveStatus, p
 			return "", msg.Error
 		}
 
-		if msg.Aux != nil {
-			if msg.ID == "moby.image.id" {
-				var result types.BuildResult
-				if err := json.Unmarshal(*msg.Aux, &result); err != nil {
-					continue
-				}
+		if msg.Aux == nil {
+			continue
+		}
 
+		switch msg.ID {
+		case "moby.image.id":
+			var result types.BuildResult
+			if err := json.Unmarshal(*msg.Aux, &result); err == nil {
 				imageID = result.ID
-			} else if printOutput && msg.ID == "moby.buildkit.trace" {
-				var resp controlapi.StatusResponse
-				var dt []byte
-
-				if err := json.Unmarshal(*msg.Aux, &dt); err != nil {
-					continue
-				}
-
-				if err := (&resp).Unmarshal(dt); err != nil {
-					continue
-				}
-
-				s := client.SolveStatus{}
-				for _, v := range resp.Vertexes {
-					s.Vertexes = append(s.Vertexes, &client.Vertex{
-						Digest:    v.Digest,
-						Inputs:    v.Inputs,
-						Name:      v.Name,
-						Started:   v.Started,
-						Completed: v.Completed,
-						Error:     v.Error,
-						Cached:    v.Cached,
-					})
-				}
-				for _, v := range resp.Statuses {
-					s.Statuses = append(s.Statuses, &client.VertexStatus{
-						ID:        v.ID,
-						Vertex:    v.Vertex,
-						Name:      v.Name,
-						Total:     v.Total,
-						Current:   v.Current,
-						Timestamp: v.Timestamp,
-						Started:   v.Started,
-						Completed: v.Completed,
-					})
-				}
-				for _, v := range resp.Logs {
-					s.Logs = append(s.Logs, &client.VertexLog{
-						Vertex:    v.Vertex,
-						Stream:    int(v.Stream),
-						Data:      v.Msg,
-						Timestamp: v.Timestamp,
-					})
-				}
-
-				displayCh <- &s
 			}
+		case "moby.buildkit.trace":
+			if image.stream == nil {
+				continue
+			}
+
+			var dt []byte
+			if err := json.Unmarshal(*msg.Aux, &dt); err != nil {
+				continue
+			}
+
+			var resp controlapi.StatusResponse
+			if err := (&resp).Unmarshal(dt); err != nil {
+				continue
+			}
+
+			displayCh <- &resp
 		}
 	}
 }

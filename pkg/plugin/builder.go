@@ -1,8 +1,8 @@
 package plugin
 
 import (
-	"github.com/dodo-cli/dodo-build/pkg/docker"
-	"github.com/dodo-cli/dodo-build/pkg/image"
+	"github.com/dodo-cli/dodo-buildkit/pkg/docker"
+	"github.com/dodo-cli/dodo-buildkit/pkg/image"
 	api "github.com/dodo-cli/dodo-core/api/v1alpha1"
 	"github.com/dodo-cli/dodo-core/pkg/plugin"
 	"github.com/dodo-cli/dodo-core/pkg/plugin/builder"
@@ -24,13 +24,13 @@ func (p *Builder) PluginInfo() (*api.PluginInfo, error) {
 	return &api.PluginInfo{Name: "build"}, nil
 }
 
-func (p *Builder) CreateImage(config *api.BuildInfo) (string, error) {
+func (p *Builder) CreateImage(config *api.BuildInfo, stream *plugin.StreamConfig) (string, error) {
 	c, err := docker.GetDockerClient()
 	if err != nil {
 		return "", err
 	}
 
-	img, err := image.NewImage(c, docker.LoadAuthConfig(), config)
+	img, err := image.NewImage(c, docker.LoadAuthConfig(), config, stream)
 	if err != nil {
 		return "", err
 	}
