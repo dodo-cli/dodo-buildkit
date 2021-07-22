@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 
-	"github.com/dodo-cli/dodo-build/plugin"
+	"github.com/dodo-cli/dodo-buildkit/plugin"
 )
 
 func main() {

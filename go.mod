@@ -1,4 +1,4 @@
-module github.com/dodo-cli/dodo-build
+module github.com/dodo-cli/dodo-buildkit
 
 go 1.16
 
