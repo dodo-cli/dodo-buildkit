@@ -15,7 +15,7 @@ tidy:
 
 .PHONY: lint
 lint:
-	CGO_ENABLED=0 golangci-lint run --enable-all
+	CGO_ENABLED=0 golangci-lint run
 
 .PHONY: test
 test:
