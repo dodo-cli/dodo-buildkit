@@ -9,7 +9,7 @@ replace (
 
 require (
 	github.com/docker/docker v20.10.2+incompatible
-	github.com/dodo-cli/dodo-core v0.0.0-20210722161142-c0233223a28c
+	github.com/dodo-cli/dodo-core v0.1.0
 	github.com/hashicorp/go-hclog v0.15.0
 	github.com/jaguilar/vt100 v0.0.0-20150826170717-2703a27b14ea
 	github.com/moby/buildkit v0.8.0-rc3
