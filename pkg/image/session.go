@@ -44,7 +44,7 @@ func readOrCreateSessionID() (string, error) {
 	if _, err := os.Lstat(sessionFile); err == nil {
 		sessionID, err := ioutil.ReadFile(sessionFile)
 		if err != nil {
-			return "", err
+			return "", fmt.Errorf("could not read file: %w", err)
 		}
 
 		return string(sessionID), nil
@@ -52,12 +52,12 @@ func readOrCreateSessionID() (string, error) {
 
 	sessionID := make([]byte, 32)
 	if _, err := rand.Read(sessionID); err != nil {
-		return "", err
+		return "", fmt.Errorf("could not generate session id: %w", err)
 	}
 
 	sessionID = []byte(hex.EncodeToString(sessionID))
 	if err := ioutil.WriteFile(sessionFile, sessionID, 0600); err != nil {
-		return "", err
+		return "", fmt.Errorf("could not write session file %s: %w", sessionFile, err)
 	}
 
 	return string(sessionID), nil

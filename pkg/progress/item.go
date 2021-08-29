@@ -50,7 +50,7 @@ type timer struct {
 	end   *time.Time
 }
 
-func newTimer(start *time.Time, end *time.Time) timer {
+func newTimer(start, end *time.Time) timer {
 	return timer{start: start, end: end}
 }
 

@@ -22,7 +22,7 @@ type Printer struct {
 	previousLines int
 }
 
-func NewPrinter(w io.Writer, height int, width int) *Printer {
+func NewPrinter(w io.Writer, height, width int) *Printer {
 	return &Printer{
 		writer:   w,
 		Height:   height,
@@ -163,7 +163,7 @@ func filterItems(items []item, height int) []item {
 		}
 	}
 
-        // When we reach this point, we have hidden everything we can and only
-        // show the bare minimum, even if it doesn't fit on the screen
-        return items
+	// When we reach this point, we have hidden everything we can and only
+	// show the bare minimum, even if it doesn't fit on the screen
+	return items
 }

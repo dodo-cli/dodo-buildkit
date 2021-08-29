@@ -3,6 +3,8 @@ package image
 import (
 	"context"
 	"encoding/json"
+	"errors"
+	"fmt"
 	"io"
 	"net"
 	"os"
@@ -101,6 +103,7 @@ func (image *Image) Build() (string, error) {
 				if done {
 					t.Print(true)
 					t.PrintErrorLogs()
+
 					return nil
 				}
 
@@ -126,7 +129,7 @@ func (image *Image) Build() (string, error) {
 
 	err = eg.Wait()
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("error during build: %w", err)
 	}
 
 	if imageID == "" {
@@ -167,7 +170,7 @@ func (image *Image) runBuild(contextData *contextData, displayCh chan *controlap
 		},
 	)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("could not build image: %w", err)
 	}
 	defer response.Body.Close()
 
@@ -178,11 +181,11 @@ func (image *Image) runBuild(contextData *contextData, displayCh chan *controlap
 	for {
 		var msg jsonmessage.JSONMessage
 		if err := decoder.Decode(&msg); err != nil {
-			if err == io.EOF {
+			if errors.Is(err, io.EOF) {
 				return imageID, nil
 			}
 
-			return "", err
+			return "", fmt.Errorf("could not decode JSON message: %w", err)
 		}
 
 		if msg.Error != nil {

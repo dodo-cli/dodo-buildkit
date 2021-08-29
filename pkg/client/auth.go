@@ -27,6 +27,7 @@ func LoadAuthConfig() map[string]types.AuthConfig {
 		Filter: func(configFile *configfiles.ConfigFile) bool {
 			var config map[string]*json.RawMessage
 			err := json.Unmarshal(configFile.Content, &config)
+
 			return err == nil && config["auths"] != nil
 		},
 	})

@@ -35,7 +35,12 @@ type Client interface {
 	ImageBuild(context.Context, io.Reader, types.ImageBuildOptions) (types.ImageBuildResponse, error)
 }
 
-func NewImage(client Client, authConfigs map[string]types.AuthConfig, config *api.BuildInfo, stream *plugin.StreamConfig) (*Image, error) {
+func NewImage(
+	client Client,
+	authConfigs map[string]types.AuthConfig,
+	config *api.BuildInfo,
+	stream *plugin.StreamConfig,
+) (*Image, error) {
 	if client == nil {
 		return nil, ErrNoClient
 	}

@@ -3,6 +3,7 @@ package progress
 import (
 	"bytes"
 
+	log "github.com/hashicorp/go-hclog"
 	"github.com/jaguilar/vt100"
 	api "github.com/moby/buildkit/api/services/control"
 	digest "github.com/opencontainers/go-digest"
@@ -69,7 +70,9 @@ func (v *vertexState) updateStatus(s *api.VertexStatus) {
 }
 
 func (v *vertexState) updateLogs(l *api.VertexLog) {
-	v.term.Write(l.Msg)
+	if _, err := v.term.Write(l.Msg); err != nil {
+		log.L().Error("error writing log to build terminal", "error", err)
+	}
 
 	msg := l.Msg
 	isFirst := true

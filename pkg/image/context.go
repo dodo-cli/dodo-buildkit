@@ -2,6 +2,7 @@ package image
 
 import (
 	"bytes"
+	"fmt"
 	"io"
 	"io/ioutil"
 	"os"
@@ -31,7 +32,7 @@ func (data *contextData) tempdir() (string, error) {
 	if len(data.contextDir) == 0 {
 		dir, err := ioutil.TempDir("", "dodo-temp-")
 		if err != nil {
-			return "", err
+			return "", fmt.Errorf("could not create temporary directory: %w", err)
 		}
 
 		data.contextDir = dir
@@ -59,6 +60,7 @@ func prepareContext(config *api.BuildInfo, session session) (*contextData, error
 		dir, err := data.tempdir()
 		if err != nil {
 			data.cleanup()
+
 			return nil, err
 		}
 
@@ -70,6 +72,7 @@ func prepareContext(config *api.BuildInfo, session session) (*contextData, error
 			Map: func(_ string, stat *fstypes.Stat) bool {
 				stat.Uid = 0
 				stat.Gid = 0
+
 				return true
 			},
 		})
@@ -88,12 +91,14 @@ func prepareContext(config *api.BuildInfo, session session) (*contextData, error
 		dir, err := data.tempdir()
 		if err != nil {
 			data.cleanup()
+
 			return nil, err
 		}
 
 		tempfile := filepath.Join(dir, "Dockerfile")
 		if err := writeDockerfile(tempfile, steps); err != nil {
 			data.cleanup()
+
 			return nil, err
 		}
 
@@ -127,7 +132,7 @@ func prepareContext(config *api.BuildInfo, session session) (*contextData, error
 		log.L().Debug("added context directories", "dirs", syncedDirs)
 	}
 
-	session.Allow(authprovider.NewDockerAuthProvider(ioutil.Discard)) // TODO: why discard?
+	session.Allow(authprovider.NewDockerAuthProvider(ioutil.Discard))
 
 	if len(config.Secrets) > 0 {
 		provider, err := secretsProvider(config)
@@ -153,18 +158,18 @@ func prepareContext(config *api.BuildInfo, session session) (*contextData, error
 func writeDockerfile(path string, content string) error {
 	file, err := os.Create(path)
 	if err != nil {
-		return err
+		return fmt.Errorf("could not create file %s: %w", path, err)
 	}
 	defer file.Close()
 
 	rc := ioutil.NopCloser(bytes.NewReader([]byte(content)))
 
 	if _, err := io.Copy(file, rc); err != nil {
-		return err
+		return fmt.Errorf("could not write dockerfile: %w", err)
 	}
 
 	if err := rc.Close(); err != nil {
-		return err
+		return fmt.Errorf("coud not close dockerfile stream: %w", err)
 	}
 
 	return nil
@@ -183,7 +188,7 @@ func secretsProvider(config *api.BuildInfo) (buildkit.Attachable, error) {
 
 	store, err := secretsprovider.NewStore(sources)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("could not initialezie secrets store: %w", err)
 	}
 
 	return secretsprovider.NewSecretProvider(store), nil

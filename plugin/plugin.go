@@ -3,10 +3,14 @@ package plugin
 import (
 	"github.com/dodo-cli/dodo-buildkit/pkg/plugin/builder"
 	"github.com/dodo-cli/dodo-core/pkg/plugin"
+	log "github.com/hashicorp/go-hclog"
 )
 
 func RunMe() int {
-	plugin.ServePlugins(builder.New())
+	if err := plugin.ServePlugins(builder.New()); err != nil {
+		log.L().Error("error serving plugin", "error", err)
+	}
+
 	return 0
 }
 

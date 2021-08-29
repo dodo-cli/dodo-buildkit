@@ -54,12 +54,12 @@ func (p *Builder) CreateImage(config *api.BuildInfo, stream *plugin.StreamConfig
 
 	img, err := image.NewImage(c, client.LoadAuthConfig(), config, stream)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("could not initialize builder client: %w", err)
 	}
 
 	imageID, err := img.Get()
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("could not resolve image: %w", err)
 	}
 
 	return imageID, nil
