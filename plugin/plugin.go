@@ -1,15 +1,15 @@
 package plugin
 
 import (
-	buildkit "github.com/dodo-cli/dodo-buildkit/pkg/plugin"
-	dodo "github.com/dodo-cli/dodo-core/pkg/plugin"
+	"github.com/dodo-cli/dodo-buildkit/pkg/plugin/builder"
+	"github.com/dodo-cli/dodo-core/pkg/plugin"
 )
 
 func RunMe() int {
-	dodo.ServePlugins(buildkit.New())
+	plugin.ServePlugins(builder.New())
 	return 0
 }
 
 func IncludeMe() {
-	dodo.IncludePlugins(buildkit.New())
+	plugin.IncludePlugins(builder.New())
 }

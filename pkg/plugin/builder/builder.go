@@ -1,4 +1,4 @@
-package plugin
+package builder
 
 import (
 	"github.com/dodo-cli/dodo-buildkit/pkg/docker"
