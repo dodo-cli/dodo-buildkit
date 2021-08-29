@@ -1,7 +1,10 @@
 package builder
 
 import (
-	"github.com/dodo-cli/dodo-buildkit/pkg/docker"
+	"fmt"
+
+	docker "github.com/docker/docker/client"
+	"github.com/dodo-cli/dodo-buildkit/pkg/client"
 	"github.com/dodo-cli/dodo-buildkit/pkg/image"
 	api "github.com/dodo-cli/dodo-core/api/v1alpha1"
 	"github.com/dodo-cli/dodo-core/pkg/plugin"
@@ -10,10 +13,16 @@ import (
 
 var _ builder.ImageBuilder = &Builder{}
 
-type Builder struct{}
+type Builder struct {
+	client *docker.Client
+}
 
 func New() *Builder {
 	return &Builder{}
+}
+
+func NewFromClient(client *docker.Client) *Builder {
+	return &Builder{client: client}
 }
 
 func (p *Builder) Type() plugin.Type {
@@ -24,13 +33,26 @@ func (p *Builder) PluginInfo() (*api.PluginInfo, error) {
 	return &api.PluginInfo{Name: "build"}, nil
 }
 
+func (p *Builder) Client() (*docker.Client, error) {
+	if p.client == nil {
+		dockerClient, err := client.GetDockerClient()
+		if err != nil {
+			return nil, fmt.Errorf("could not get docker config: %w", err)
+		}
+
+		p.client = dockerClient
+	}
+
+	return p.client, nil
+}
+
 func (p *Builder) CreateImage(config *api.BuildInfo, stream *plugin.StreamConfig) (string, error) {
-	c, err := docker.GetDockerClient()
+	c, err := p.Client()
 	if err != nil {
 		return "", err
 	}
 
-	img, err := image.NewImage(c, docker.LoadAuthConfig(), config, stream)
+	img, err := image.NewImage(c, client.LoadAuthConfig(), config, stream)
 	if err != nil {
 		return "", err
 	}

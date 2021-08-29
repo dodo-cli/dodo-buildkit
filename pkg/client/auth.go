@@ -1,8 +1,9 @@
-package docker
+package client
 
 import (
 	"encoding/base64"
 	"encoding/json"
+	"fmt"
 	"strings"
 
 	"github.com/docker/docker/api/types"
@@ -65,7 +66,7 @@ func decodeAuth(authStr string) (string, string, error) {
 
 	n, err := base64.StdEncoding.Decode(decoded, authByte)
 	if err != nil {
-		return "", "", err
+		return "", "", fmt.Errorf("invalid base64 string: %w", err)
 	}
 
 	if n > decLen {
