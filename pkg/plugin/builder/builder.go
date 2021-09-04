@@ -30,7 +30,7 @@ func (p *Builder) Type() plugin.Type {
 }
 
 func (p *Builder) PluginInfo() (*api.PluginInfo, error) {
-	return &api.PluginInfo{Name: "build"}, nil
+	return &api.PluginInfo{Name: "buildkit"}, nil
 }
 
 func (p *Builder) Client() (*docker.Client, error) {
