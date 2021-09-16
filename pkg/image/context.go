@@ -9,7 +9,7 @@ import (
 	"path/filepath"
 
 	"github.com/docker/docker/pkg/urlutil"
-	api "github.com/dodo-cli/dodo-core/api/v1alpha1"
+	api "github.com/dodo-cli/dodo-core/api/v1alpha2"
 	log "github.com/hashicorp/go-hclog"
 	buildkit "github.com/moby/buildkit/session"
 	"github.com/moby/buildkit/session/auth/authprovider"

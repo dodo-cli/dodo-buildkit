@@ -3,7 +3,7 @@ package image
 import (
 	"testing"
 
-	api "github.com/dodo-cli/dodo-core/api/v1alpha1"
+	api "github.com/dodo-cli/dodo-core/api/v1alpha2"
 	controlapi "github.com/moby/buildkit/api/services/control"
 	"github.com/stretchr/testify/assert"
 )
