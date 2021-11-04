@@ -8,6 +8,7 @@ replace (
 )
 
 require (
+	github.com/containerd/containerd v1.5.7 // indirect
 	github.com/docker/docker v20.10.2+incompatible
 	github.com/dodo-cli/dodo-core v0.2.0
 	github.com/hashicorp/go-hclog v0.15.0
@@ -20,7 +21,7 @@ require (
 	github.com/stretchr/testify v1.6.1
 	github.com/tonistiigi/fsutil v0.0.0-20201103201449-0834f99b7b85
 	github.com/tonistiigi/units v0.0.0-20180711220420-6950e57a87ea
-	golang.org/x/net v0.0.0-20201110031124-69a78807bb2b
-	golang.org/x/sync v0.0.0-20200625203802-6e8e738ad208
-	golang.org/x/time v0.0.0-20200416051211-89c76fbcd5d1
+	golang.org/x/net v0.0.0-20210226172049-e18ecbb05110
+	golang.org/x/sync v0.0.0-20201207232520-09787c993a3a
+	golang.org/x/time v0.0.0-20200630173020-3af7569d3a1e
 )
