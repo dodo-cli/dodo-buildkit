@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	docker "github.com/docker/docker/client"
-	"github.com/dodo-cli/dodo-buildkit/pkg/client"
+	"github.com/dodo-cli/dodo-docker/pkg/client"
 	"github.com/dodo-cli/dodo-buildkit/pkg/image"
 	api "github.com/dodo-cli/dodo-core/api/v1alpha2"
 	"github.com/dodo-cli/dodo-core/pkg/plugin"
