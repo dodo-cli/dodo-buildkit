@@ -15,7 +15,7 @@ import (
 	"github.com/docker/docker/api/types/filters"
 	"github.com/docker/docker/pkg/jsonmessage"
 	"github.com/docker/docker/pkg/stringid"
-	"github.com/dodo-cli/dodo-buildkit/pkg/progress"
+	"github.com/dodo-cli/dodo-buildkit/internal/progress"
 	controlapi "github.com/moby/buildkit/api/services/control"
 	"github.com/moby/buildkit/util/appcontext"
 	"golang.org/x/sync/errgroup"
