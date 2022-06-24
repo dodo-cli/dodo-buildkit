@@ -9,7 +9,6 @@ import (
 	"path/filepath"
 
 	"github.com/docker/docker/pkg/urlutil"
-	api "github.com/dodo-cli/dodo-core/api/v1alpha2"
 	log "github.com/hashicorp/go-hclog"
 	buildkit "github.com/moby/buildkit/session"
 	"github.com/moby/buildkit/session/auth/authprovider"
@@ -18,6 +17,7 @@ import (
 	"github.com/moby/buildkit/session/sshforward/sshprovider"
 	"github.com/pkg/errors"
 	fstypes "github.com/tonistiigi/fsutil/types"
+	api "github.com/wabenet/dodo-core/api/v1alpha3"
 )
 
 const clientSession = "client-session"

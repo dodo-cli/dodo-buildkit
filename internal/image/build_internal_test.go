@@ -3,9 +3,9 @@ package image
 import (
 	"testing"
 
-	api "github.com/dodo-cli/dodo-core/api/v1alpha2"
 	controlapi "github.com/moby/buildkit/api/services/control"
 	"github.com/stretchr/testify/assert"
+	api "github.com/wabenet/dodo-core/api/v1alpha3"
 )
 
 func TestBuildImage(t *testing.T) {

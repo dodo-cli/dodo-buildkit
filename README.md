@@ -14,11 +14,11 @@ following generate config:
 
 ```yaml
 plugins:
-  - import: github.com/dodo-cli/dodo-buildkit/plugin
+  - import: github.com/wabenet/dodo-buildkit/plugin
 ```
 
 Alternatively, you can install it as a standalone plugin by downloading the
-correct file for your system from the [releases page](https://github.com/dodo-cli/dodo-buildkit/releases),
+correct file for your system from the [releases page](https://github.com/wabenet/dodo-buildkit/releases),
 then copy it into the dodo plugin directory (`${HOME}/.dodo/plugins`).
 
 ## configuration

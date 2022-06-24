@@ -5,8 +5,8 @@ import (
 	"net"
 
 	"github.com/docker/docker/api/types"
-	api "github.com/dodo-cli/dodo-core/api/v1alpha2"
-	"github.com/dodo-cli/dodo-core/pkg/plugin"
+	api "github.com/wabenet/dodo-core/api/v1alpha3"
+	"github.com/wabenet/dodo-core/pkg/plugin"
 	"golang.org/x/net/context"
 )
 

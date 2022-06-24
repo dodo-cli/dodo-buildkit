@@ -10,8 +10,8 @@ import (
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/pkg/jsonmessage"
-	api "github.com/dodo-cli/dodo-core/api/v1alpha2"
 	"github.com/stretchr/testify/assert"
+	api "github.com/wabenet/dodo-core/api/v1alpha3"
 	"golang.org/x/net/context"
 )
 
