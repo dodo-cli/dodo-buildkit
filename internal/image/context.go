@@ -17,7 +17,7 @@ import (
 	"github.com/moby/buildkit/session/sshforward/sshprovider"
 	"github.com/pkg/errors"
 	fstypes "github.com/tonistiigi/fsutil/types"
-	api "github.com/wabenet/dodo-core/api/v1alpha3"
+	api "github.com/wabenet/dodo-core/api/v1alpha4"
 )
 
 const clientSession = "client-session"

@@ -934,10 +934,10 @@ github.com/vdemeester/k8s-pkg-credentialprovider v1.17.4/go.mod h1:inCTmtUdr5KJb
 github.com/vishvananda/netlink v1.1.0/go.mod h1:cTgwzPIzzgDAYoQrMm0EdrjRUBkTqKYppBueQtXaqoE=
 github.com/vishvananda/netns v0.0.0-20191106174202-0a2b9b5464df/go.mod h1:JP3t17pCcGlemwknint6hfoeCVQrEMVwxRLRjXpq+BU=
 github.com/vmware/govmomi v0.20.3/go.mod h1:URlwyTFZX72RmxtxuaFL2Uj3fD1JTvZdx59bHWk6aFU=
-github.com/wabenet/dodo-core v0.6.0 h1:pk/m5BvuqXcyK599VNfOLAIameIXAmf4dPWIsW+f1Mg=
-github.com/wabenet/dodo-core v0.6.0/go.mod h1:iB9pUTieax34YMTjf1wnsXC0FX9TmHTeu15PKgv/Hf8=
-github.com/wabenet/dodo-docker v0.4.0 h1:4zQnWD7bLIah9TtZD+xPM5IiMCRV8lHR8OguuTweb28=
-github.com/wabenet/dodo-docker v0.4.0/go.mod h1:rhRHmdCPm2dc3BEgS+YqCN5K+S0yvKTWl+lkp20rctQ=
+github.com/wabenet/dodo-core v0.7.0 h1:raw8rDDZjlwhewhkxNiobmk32gEPeQNnEJlwrEWm/UY=
+github.com/wabenet/dodo-core v0.7.0/go.mod h1:iB9pUTieax34YMTjf1wnsXC0FX9TmHTeu15PKgv/Hf8=
+github.com/wabenet/dodo-docker v0.4.1 h1:f/M2pj17k2RI/j+nO7rh7A26VK8AstTMTUeKE3uRJ80=
+github.com/wabenet/dodo-docker v0.4.1/go.mod h1:4t9j4PylDcveXEdnXoXAVoNdBh/G+Y7fwvoJD/llhNo=
 github.com/willf/bitset v1.1.11-0.20200630133818-d5bec3311243/go.mod h1:RjeCKbqT1RxIR/KWY6phxZiaY1IyutSBfGjNPySAYV4=
 github.com/xanzy/go-gitlab v0.31.0/go.mod h1:sPLojNBn68fMUWSxIJtdVVIP8uSBYqesTfDUseX11Ug=
 github.com/xanzy/go-gitlab v0.32.0/go.mod h1:sPLojNBn68fMUWSxIJtdVVIP8uSBYqesTfDUseX11Ug=

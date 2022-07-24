@@ -6,7 +6,7 @@ import (
 
 	docker "github.com/docker/docker/client"
 	"github.com/wabenet/dodo-buildkit/internal/image"
-	api "github.com/wabenet/dodo-core/api/v1alpha3"
+	api "github.com/wabenet/dodo-core/api/v1alpha4"
 	"github.com/wabenet/dodo-core/pkg/plugin"
 	"github.com/wabenet/dodo-core/pkg/plugin/builder"
 	"github.com/wabenet/dodo-docker/pkg/client"
@@ -61,6 +61,8 @@ func (p *Builder) Init() (plugin.PluginConfig, error) {
 		"experimental":    fmt.Sprintf("%t", ping.Experimental),
 	}, nil
 }
+
+func (*Builder) Cleanup() {}
 
 func (p *Builder) ensureClient() (*docker.Client, error) {
 	if p.client == nil {

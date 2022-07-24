@@ -18,8 +18,8 @@ require (
 	github.com/stretchr/testify v1.7.0
 	github.com/tonistiigi/fsutil v0.0.0-20201103201449-0834f99b7b85
 	github.com/tonistiigi/units v0.0.0-20180711220420-6950e57a87ea
-	github.com/wabenet/dodo-core v0.6.0
-	github.com/wabenet/dodo-docker v0.4.0
+	github.com/wabenet/dodo-core v0.7.0
+	github.com/wabenet/dodo-docker v0.4.1
 	golang.org/x/net v0.0.0-20211216030914-fe4d6282115f
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c
 	golang.org/x/time v0.0.0-20210723032227-1f47c861a9ac

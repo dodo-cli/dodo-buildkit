@@ -5,7 +5,7 @@ import (
 
 	controlapi "github.com/moby/buildkit/api/services/control"
 	"github.com/stretchr/testify/assert"
-	api "github.com/wabenet/dodo-core/api/v1alpha3"
+	api "github.com/wabenet/dodo-core/api/v1alpha4"
 )
 
 func TestBuildImage(t *testing.T) {
