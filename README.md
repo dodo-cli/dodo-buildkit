@@ -1,6 +1,12 @@
-# dodo buildkit builder
+![release](https://img.shields.io/github/v/release/wabenet/dodo-buildkit?sort=semver)
+![build](https://img.shields.io/github/workflow/status/wabenet/dodo-buildkit/CI?logo=github)
+![codecov](https://img.shields.io/codecov/c/github/wabenet/dodo-buildkit?logo=codecov)
+![codeclimate](https://img.shields.io/codeclimate/maintainability/wabenet/dodo-buildkit?logo=codeclimate)
+![license](https://img.shields.io/github/license/wabenet/dodo-buildkit)
 
-Adds support for [buildkit](https://github.com/moby/buildkit) as a dodo builder plugin.
+# dodo buildkit plugin
+
+Adds support for buildkit as a dodo builder plugin.
 
 In the current version, it will ony detect the default builder that comes with the
 docker daemon, similar to the docker cli.
