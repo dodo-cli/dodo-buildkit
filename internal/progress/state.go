@@ -4,9 +4,9 @@ import (
 	"bytes"
 
 	log "github.com/hashicorp/go-hclog"
-	"github.com/jaguilar/vt100"
 	api "github.com/moby/buildkit/api/services/control"
 	digest "github.com/opencontainers/go-digest"
+	"github.com/tonistiigi/vt100"
 )
 
 type vertexStates struct {

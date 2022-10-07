@@ -3,8 +3,8 @@ package progress
 import (
 	"fmt"
 
-	"github.com/jaguilar/vt100"
 	"github.com/morikuni/aec"
+	"github.com/tonistiigi/vt100"
 )
 
 type logItem struct {
