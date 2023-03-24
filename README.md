@@ -15,12 +15,12 @@ docker daemon, similar to the docker cli.
 
 This plugin is already included in the dodo default distribution.
 
-If you want to compile your own dodo distribution, you can add this plugin with the
+If you compile your own dodo distribution, you can add this plugin with the
 following generate config:
 
 ```yaml
 plugins:
-  - import: github.com/wabenet/dodo-buildkit/plugin
+  - import: github.com/wabenet/dodo-buildkit
 ```
 
 Alternatively, you can install it as a standalone plugin by downloading the
