@@ -6,7 +6,7 @@ import (
 
 	docker "github.com/docker/docker/client"
 	"github.com/wabenet/dodo-buildkit/internal/image"
-	api "github.com/wabenet/dodo-core/api/v1alpha4"
+	core "github.com/wabenet/dodo-core/api/core/v1alpha5"
 	"github.com/wabenet/dodo-core/pkg/plugin"
 	"github.com/wabenet/dodo-core/pkg/plugin/builder"
 	"github.com/wabenet/dodo-docker/pkg/client"
@@ -32,16 +32,16 @@ func (p *Builder) Type() plugin.Type {
 	return builder.Type
 }
 
-func (p *Builder) PluginInfo() *api.PluginInfo {
-	return &api.PluginInfo{
-		Name: &api.PluginName{
+func (p *Builder) PluginInfo() *core.PluginInfo {
+	return &core.PluginInfo{
+		Name: &core.PluginName{
 			Name: name,
 			Type: builder.Type.String(),
 		},
 	}
 }
 
-func (p *Builder) Init() (plugin.PluginConfig, error) {
+func (p *Builder) Init() (plugin.Config, error) {
 	client, err := p.ensureClient()
 	if err != nil {
 		return nil, err
@@ -77,7 +77,7 @@ func (p *Builder) ensureClient() (*docker.Client, error) {
 	return p.client, nil
 }
 
-func (p *Builder) CreateImage(config *api.BuildInfo, stream *plugin.StreamConfig) (string, error) {
+func (p *Builder) CreateImage(config *core.BuildInfo, stream *plugin.StreamConfig) (string, error) {
 	c, err := p.ensureClient()
 	if err != nil {
 		return "", err

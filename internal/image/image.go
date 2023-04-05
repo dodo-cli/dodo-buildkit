@@ -5,7 +5,7 @@ import (
 	"net"
 
 	"github.com/docker/docker/api/types"
-	api "github.com/wabenet/dodo-core/api/v1alpha4"
+	core "github.com/wabenet/dodo-core/api/core/v1alpha5"
 	"github.com/wabenet/dodo-core/pkg/plugin"
 	"golang.org/x/net/context"
 )
@@ -22,7 +22,7 @@ func (e ImageError) Error() string {
 }
 
 type Image struct {
-	config      *api.BuildInfo
+	config      *core.BuildInfo
 	client      Client
 	authConfigs map[string]types.AuthConfig
 	session     session
@@ -38,7 +38,7 @@ type Client interface {
 func NewImage(
 	client Client,
 	authConfigs map[string]types.AuthConfig,
-	config *api.BuildInfo,
+	config *core.BuildInfo,
 	stream *plugin.StreamConfig,
 ) (*Image, error) {
 	if client == nil {

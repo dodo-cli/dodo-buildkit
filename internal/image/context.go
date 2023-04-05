@@ -4,20 +4,20 @@ import (
 	"bytes"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 
 	"github.com/docker/docker/pkg/urlutil"
 	log "github.com/hashicorp/go-hclog"
 	buildkit "github.com/moby/buildkit/session"
-	"github.com/moby/buildkit/session/auth/authprovider"
+	//"github.com/moby/buildkit/session/auth/authprovider"
 	"github.com/moby/buildkit/session/filesync"
 	"github.com/moby/buildkit/session/secrets/secretsprovider"
 	"github.com/moby/buildkit/session/sshforward/sshprovider"
 	"github.com/pkg/errors"
+	"github.com/tonistiigi/fsutil"
 	fstypes "github.com/tonistiigi/fsutil/types"
-	api "github.com/wabenet/dodo-core/api/v1alpha4"
+	core "github.com/wabenet/dodo-core/api/core/v1alpha5"
 )
 
 const clientSession = "client-session"
@@ -30,12 +30,7 @@ type contextData struct {
 
 func (data *contextData) tempdir() (string, error) {
 	if len(data.contextDir) == 0 {
-		dir, err := ioutil.TempDir("", "dodo-temp-")
-		if err != nil {
-			return "", fmt.Errorf("could not create temporary directory: %w", err)
-		}
-
-		data.contextDir = dir
+		data.contextDir = os.TempDir()
 	}
 
 	return data.contextDir, nil
@@ -47,14 +42,14 @@ func (data *contextData) cleanup() {
 	}
 }
 
-func prepareContext(config *api.BuildInfo, session session) (*contextData, error) {
+func prepareContext(config *core.BuildInfo, session session) (*contextData, error) {
 	log.L().Debug("preparing context")
 
 	data := contextData{
 		remote:         clientSession,
 		dockerfileName: config.Dockerfile,
 	}
-	syncedDirs := []filesync.SyncedDir{}
+	syncedDirs := filesync.StaticDirSource{}
 
 	if config.Context == "" {
 		dir, err := data.tempdir()
@@ -64,18 +59,17 @@ func prepareContext(config *api.BuildInfo, session session) (*contextData, error
 			return nil, err
 		}
 
-		syncedDirs = append(syncedDirs, filesync.SyncedDir{Name: "context", Dir: dir})
+		syncedDirs["context"] = filesync.SyncedDir{Dir: dir}
 	} else if _, err := os.Stat(config.Context); err == nil {
-		syncedDirs = append(syncedDirs, filesync.SyncedDir{
-			Name: "context",
-			Dir:  config.Context,
-			Map: func(_ string, stat *fstypes.Stat) bool {
+		syncedDirs["context"] = filesync.SyncedDir{
+			Dir: config.Context,
+			Map: func(_ string, stat *fstypes.Stat) fsutil.MapResult {
 				stat.Uid = 0
 				stat.Gid = 0
 
-				return true
+				return fsutil.MapResultKeep
 			},
-		})
+		}
 	} else if urlutil.IsURL(config.Context) {
 		data.remote = config.Context
 	} else {
@@ -105,18 +99,16 @@ func prepareContext(config *api.BuildInfo, session session) (*contextData, error
 		data.dockerfileName = filepath.Base(tempfile)
 		dockerfileDir := filepath.Dir(tempfile)
 
-		syncedDirs = append(syncedDirs, filesync.SyncedDir{
-			Name: "dockerfile",
-			Dir:  dockerfileDir,
-		})
+		syncedDirs["dockerfile"] = filesync.SyncedDir{
+			Dir: dockerfileDir,
+		}
 	} else if config.Dockerfile != "" && data.remote == clientSession {
 		data.dockerfileName = filepath.Base(config.Dockerfile)
 		dockerfileDir := filepath.Dir(config.Dockerfile)
 
-		syncedDirs = append(syncedDirs, filesync.SyncedDir{
-			Name: "dockerfile",
-			Dir:  dockerfileDir,
-		})
+		syncedDirs["dockerfile"] = filesync.SyncedDir{
+			Dir: dockerfileDir,
+		}
 	}
 
 	log.L().Debug(
@@ -132,7 +124,7 @@ func prepareContext(config *api.BuildInfo, session session) (*contextData, error
 		log.L().Debug("added context directories", "dirs", syncedDirs)
 	}
 
-	session.Allow(authprovider.NewDockerAuthProvider(ioutil.Discard))
+	//session.Allow(authprovider.NewDockerAuthProvider(io.Discard))
 
 	if len(config.Secrets) > 0 {
 		provider, err := secretsProvider(config)
@@ -162,7 +154,7 @@ func writeDockerfile(path string, content string) error {
 	}
 	defer file.Close()
 
-	rc := ioutil.NopCloser(bytes.NewReader([]byte(content)))
+	rc := io.NopCloser(bytes.NewReader([]byte(content)))
 
 	if _, err := io.Copy(file, rc); err != nil {
 		return fmt.Errorf("could not write dockerfile: %w", err)
@@ -175,7 +167,7 @@ func writeDockerfile(path string, content string) error {
 	return nil
 }
 
-func secretsProvider(config *api.BuildInfo) (buildkit.Attachable, error) {
+func secretsProvider(config *core.BuildInfo) (buildkit.Attachable, error) {
 	sources := make([]secretsprovider.Source, 0, len(config.Secrets))
 
 	for _, secret := range config.Secrets {
@@ -194,7 +186,7 @@ func secretsProvider(config *api.BuildInfo) (buildkit.Attachable, error) {
 	return secretsprovider.NewSecretProvider(store), nil
 }
 
-func sshAgentProvider(config *api.BuildInfo) (buildkit.Attachable, error) {
+func sshAgentProvider(config *core.BuildInfo) (buildkit.Attachable, error) {
 	configs := make([]sshprovider.AgentConfig, 0, len(config.SshAgents))
 
 	for _, agent := range config.SshAgents {
